@@ -1,117 +1,97 @@
 <template>
-  <div class="container-fluid">
-    <div class="card">
-          <b-button class="mb-2" variant="primary" @click="$bvToast.show('example-toast')">
-      Show toast
-    </b-button>
-    <b-toast id="example-toast" title="BootstrapVue" static no-auto-hide>
-      Hello, world! This is a toast message.
-    </b-toast>
-      <b-button @click.prevent="makeToast(true)">Show Toast (appended)</b-button>
-      <div class="card-header">
-        <h3 class="card-title pull-right">Διαχείριση Ρόλων Χρηστών</h3>
-        <a
-          class="btn btn-outline-primary btn-sm float-right"
-          v-b-modal.roleModal
-          @click="showModal()">
-        <i class="fas fa-plus"></i> Νέος Ρόλος</a>
-      </div>
-      <div class="card-body">
-        <b-table
-          hover
-          ref="table"
-          class="table"
-          :items="roles"
-          :fields="fields"
-        >
-        <template #cell(actions)="row">
-            <b-button
-              size="sm"
-              variant="primary"
-              v-b-modal.roleModal
-              @click="showModal(row.item, row.index)"
-              class="mr-1"
-            >
-              <i class="fas fa-edit"></i>
-            </b-button>
-            <b-button
-              size="sm"
-              variant="danger"
-              v-b-modal.roleModal
-              @click="showModal(row.item, row.index)"
-              class="mr-1"
-            >
-              <i class="fas fa-trash"></i>
-            </b-button>
-          </template>
-
-        </b-table>
-      </div>
-    </div>
-
-    <!-- Modal -->
-    <b-modal 
-    id="roleModal" 
-    title="Νέα Κατάσταση" 
-    ref="someModal"
-    >
-      <form role="form">
-        <div class="card-body">
-          <div class="form-group">
-            <input type="hidden" v-model="modalData.id" />
-            <input
-              type="text"
-              class="form-control"
-              id="input-name"
-              placeholder="Όνομα"
-              v-model="modalData.name"
-            />
-            <input
-              type="text"
-              class="form-control"
-              id="input-slug"
-              placeholder="slug"
-              v-model="modalData.slug"
-            />
+  <b-container fluid>
+    <b-row>
+      <b-col md="5">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Προσθήκη ρόλου</h3>
           </div>
-          <!-- <div class="form-group">
-            <label>Ενεργοποιημένο</label>
-            <select
-              v-model="modalData.status"
-              :selected="modalData.status"
-              class="form-control"
-            >
-              <option value="1">Ναι</option>
-              <option value="0">Όχι</option>
-            </select>
-          </div> -->
+          <b-card-body>
+            <b-form @submit.prevent="saveRole" @reset="resetForm">
+              <input type="hidden" v-model="data.id">
+              <b-form-group id="input-name" label-for="input-name">
+                <b-form-input
+                  id="input-name"
+                  type="text"
+                  placeholder="Ρόλος"
+                  required
+                  v-model="data.name"
+                ></b-form-input>
+              </b-form-group>
+              <b-form-group id="input-slug" label-for="input-slug">
+                <b-form-input
+                  id="input-slug"
+                  type="text"
+                  placeholder="Slug"
+                  required
+                  v-model="data.slug"
+                ></b-form-input>
+              </b-form-group>
+              <b-button-group class="float-right">
+              <b-button type="submit" variant="outline-success" size="sm" class="mr-1">Αποθήκευση</b-button>
+              <b-button type="reset" variant="outline-danger" size="sm">Καθαρισμός</b-button>
+              </b-button-group>
+            </b-form>
+          </b-card-body>
         </div>
-      </form>
-      <template #modal-footer="{ cancel }">
-        <b-button size="sm" variant="success" @click="saveRole">
-          Αποθήκευση
-        </b-button>
-        <b-button size="sm" variant="danger" @click="cancel()">
-          Ακύρωση
-        </b-button>
-      </template>
-    </b-modal>
-    <!-- /Modal -->
-  </div>
+      </b-col>
+      <b-col md="7">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title pull-right">Ρόλοι χρηστών</h3>
+          </div>
+          <div class="card-body">
+            <b-table
+              hover
+              ref="table"
+              class="table"
+              :items="roles"
+              :fields="fields"
+              show-empty
+              responsive
+              bordered
+            >
+              <template #cell(actions)="row">
+                <b-button
+                  size="sm"
+                  variant="primary"
+                  @click="editRole(row.item, row.index)"
+                  class="mr-1"
+                >
+                  <i class="fas fa-edit"></i>
+                </b-button>
+                <b-button
+                  size="sm"
+                  variant="danger"
+                  @click="showModal(row.item, row.index)"
+                >
+                  <i class="fas fa-trash"></i>
+                </b-button>
+              </template>
+            </b-table>
+          </div>
+        </div>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 <script>
 export default {
   data() {
     return {
+      data: {
+        id: "",
+        name: '',
+        slug: ''
+      },
+      index: -1,
       roles: [],
-      modalData: {},
       fields: [
         { key: "id", label: "Id" },
         { key: "name", label: "Όνομα" },
         { key: "slug", label: "Slug" },
         { key: "actions", label: "Ενέργειες" },
       ],
-      index: -1,
     };
   },
   async created() {
@@ -119,40 +99,40 @@ export default {
     this.roles = res.data;
   },
   methods: {
-    showModal(data, index) {
-      let obj = {
-        id: data ? data.id : '',
-        name: data ? data.name : '',
-        slug: data ? data.slug : '',
-      };
-      this.index = data ? index : -1;
-      
-      this.modalData = obj;
+    resetForm() {
+      this.data.id = '';
+      this.data.name = '';
+      this.data.slug = '';
     },
-    makeToast(append) {
-      this.makeToaster(append);
+    editRole(data, index) {
+      this.data.id = data.id;
+      this.data.name = data.name;
+      this.data.slug = data.slug;
+      this.index = data ? index : -1;
     },
     async saveRole() {
-      if (this.modalData.name.trim() == "") return alert();
-
-      const res = await this.callApi(
-        "post",
-        "/saveRole",
-        this.modalData
-      );
-      if (res.status == 200 || res.status == 201) {
-        if(this.index != -1) {
+      if (this.data.name.trim() == '' || this.data.slug.trim() == '') {
+        return this.makeToaster('Τα πεδία είναι υποχρεωτικά', 'Προσοχή', 'danger');
+      }
+      
+      const res = await this.callApi("post", "/saveRole", this.data);
+      if (res.status == 201 || res.status == 200) {
+        if (this.index != -1) {
           this.roles[this.index] = res.data;
         } else {
           this.roles.unshift(res.data);
         }
+        this.resetForm();
         this.$refs.table.refresh();
-        this.$refs.someModal.hide();
-        this.makeToaster();
-      } else {
-        // this.swr("");
+        this.makeToaster('Οι ρόλοι επεξεργάστηκαν επιτυχώς!', 'Επιτυχία', 'success');
+      } else if(res.status == 200) {
+        for (let key in res.data.errors) {
+          this.makeToaster(res.data.errors[key][0], 'Προσοχή', 'danger');
+          
+        }
+        
       }
     },
-  }
+  },
 };
 </script>

@@ -6,6 +6,13 @@ export default {
     }, 
     methods: {
         async callApi(method, url, dataObj ) {
+            // if(dataObj != undefined) {
+            //     url += '?filter=' + dataObj.filter
+            // }
+            // if(dataObj != undefined) {
+            //     url += '?page=' + dataObj.page
+            // }
+
             try {
               return await axios({
                     method: method,
@@ -13,16 +20,16 @@ export default {
                     data: dataObj
                 });
             } catch (e) {
-                return e.response
+                console.log(e.response.data.errors);
+                return e.response;
             }
         },
-        makeToaster(append = false) {
-            this.$bvToast.toast(`This is toast number`, {
-              title: 'BootstrapVue Toast',
-              variant: 'success',
+        makeToaster(text, title, variant) {
+            this.$bvToast.toast(text, {
+              title: title,
+              variant: variant,
               toaster: 'b-toaster-top-right',
               static: true,
-              noAutoHide : true
             })
           }
 

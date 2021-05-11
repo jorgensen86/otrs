@@ -62,28 +62,18 @@
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="../charts/chartjs.html" class="nav-link">
+                                <a href="" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Νέο Ticket</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="../charts/flot.html" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Flot</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="../charts/inline.html" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Inline</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="../charts/uplot.html" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>uPlot</p>
-                                </a>
+                            <router-link to="/admin/tickets" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>
+                                    Tickets
+                                </p>
+                            </router-link>
                             </li>
                         </ul>
                     </li>
@@ -114,9 +104,15 @@
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
+                                <router-link to="customers" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Πελάτες</p>
+                                </router-link>
+                            </li>
+                            <li class="nav-item">
                                 <router-link to="users" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>Χρήστες</p>
+                                    <p>Χρήστες Συστήματος</p>
                                 </router-link>
                             </li>
                             <li class="nav-item">

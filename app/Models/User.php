@@ -18,6 +18,9 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'role_id',
+        'is_admin',
+        'active',
         'email',
         'password',
     ];
@@ -41,8 +44,22 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function roles() {
-        return $this->belongsToMany(Role::class);
+    // public function getStatusAttribute($value) 
+    // {
+    //     return $value ? __('app.text_yes') : __('app.text_no');
+    // }
+
+    // public function getisAdminAttribute($value) 
+    // {
+    //     return $value ? __('app.text_yes') : __('app.text_no');
+    // }
+
+    public function customerInfo() {
+        return $this->hasOne(CustomerInfo::class);
+    }
+
+    public function role() {
+        return $this->belongsTo(Role::class);
     }
     
     public function permissions() {
